@@ -251,6 +251,38 @@ h1, h2, h3 { font-family: 'Inter', system-ui, sans-serif; }
 .error-panel p { color: #7f1d1d; font-size: .86rem; line-height: 1.5; }
 .error-hint { font-size: .78rem; opacity: .8; }
 
+/* Board Header Section */
+.board-header-section { margin-bottom: 12px; }
+.board-header-content { display: flex; align-items: center; justify-content: space-between; gap: 20px; padding: 16px 20px; border: 1px solid var(--line); border-radius: var(--radius-lg); background: var(--surface); box-shadow: var(--shadow-xs); margin-bottom: 10px; }
+.board-header-left h2 { margin-top: 4px; font-size: clamp(1.1rem, 1.6vw, 1.4rem); font-weight: 700; letter-spacing: -.03em; }
+.board-header-message { margin: 4px 0 0; color: var(--ink-tertiary); font-size: .82rem; }
+.board-header-progress { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+.progress-ring-wrapper { position: relative; width: 52px; height: 52px; }
+.progress-ring { width: 100%; height: 100%; transform: rotate(-90deg); }
+.progress-ring-bg { fill: none; stroke: var(--line-light); stroke-width: 5; }
+.progress-ring-fill { fill: none; stroke: var(--accent); stroke-width: 5; stroke-linecap: round; transition: stroke-dasharray .4s ease; }
+.progress-ring-text { position: absolute; inset: 0; display: grid; place-items: center; font-size: .68rem; font-weight: 800; color: var(--ink); }
+.progress-label { font-size: .65rem; font-weight: 600; color: var(--ink-tertiary); }
+
+/* Enhanced Stats */
+.stats-grid .stat-card { display: flex; align-items: center; gap: 10px; }
+.stat-icon { width: 32px; height: 32px; display: grid; place-items: center; border-radius: var(--radius-sm); flex-shrink: 0; }
+.stat-icon-total { color: #6366f1; background: #eef2ff; }
+.stat-icon-active { color: #f59e0b; background: #fffbeb; }
+.stat-icon-done { color: #10b981; background: #ecfdf5; }
+.stat-icon-overdue { color: #ef4444; background: #fef2f2; }
+.stat-info { display: flex; flex-direction: column; }
+.stat-info span { font-size: .7rem; }
+.stat-info strong { font-size: 1.15rem; }
+
+/* Confirm Dialog */
+.confirm-dialog { width: min(380px, 100%); padding: 24px; border: 1px solid var(--line); border-radius: var(--radius-xl); background: var(--surface); box-shadow: var(--shadow-xl); text-align: center; animation: slideUp .2s cubic-bezier(.4,0,.2,1); }
+.confirm-icon { width: 44px; height: 44px; margin: 0 auto 12px; display: grid; place-items: center; border-radius: 50%; color: var(--danger); background: var(--danger-soft); }
+.confirm-dialog h3 { font-size: 1.05rem; font-weight: 700; margin-bottom: 6px; }
+.confirm-dialog p { color: var(--ink-secondary); font-size: .84rem; line-height: 1.5; margin-bottom: 16px; }
+.confirm-actions { display: flex; gap: 8px; justify-content: center; }
+.confirm-actions .button { min-width: 100px; }
+
 /* Responsive */
 @media (max-width: 1180px) {
   .board-grid { grid-template-columns: repeat(2, minmax(280px, 1fr)); }

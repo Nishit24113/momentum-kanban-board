@@ -14,7 +14,6 @@ import { sortableKeyboardCoordinates } from '@dnd-kit/sortable'
 import {
   AlertTriangle,
   CheckCircle2,
-  CircleDot,
   ListFilter,
   Plus,
   Search,
@@ -28,6 +27,9 @@ import TaskCard from './components/TaskCard'
 import TaskModal from './components/TaskModal'
 import TeamPanel from './components/TeamPanel'
 import LabelPanel from './components/LabelPanel'
+import BoardHeader from './components/BoardHeader'
+import KeyboardShortcuts from './components/KeyboardShortcuts'
+import ConfirmDialog from './components/ConfirmDialog'
 import {
   createTask, deleteTask, fetchTasks, updateTask, logActivity,
   fetchTeamMembers, fetchLabels, fetchTaskLabels, setTaskLabels,
@@ -69,6 +71,7 @@ function App() {
   const [labelFilter, setLabelFilter] = useState<string>('all')
   const [showTeamPanel, setShowTeamPanel] = useState(false)
   const [showLabelPanel, setShowLabelPanel] = useState(false)
+  const [confirmDelete, setConfirmDelete] = useState<Task | null>(null)
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 6 } }),
@@ -217,15 +220,18 @@ function App() {
     }
   }
 
-  async function handleDeleteTask() {
+  function handleDeleteTask() {
     if (!modal?.task) return
-    const confirmed = window.confirm(`Delete "${modal.task.title}"? This cannot be undone.`)
-    if (!confirmed) return
+    setConfirmDelete(modal.task)
+  }
 
+  async function executeDeleteTask() {
+    if (!confirmDelete) return
     setBusy(true)
     try {
-      await deleteTask(modal.task.id)
-      setTasks((current) => current.filter((task) => task.id !== modal.task?.id))
+      await deleteTask(confirmDelete.id)
+      setTasks((current) => current.filter((task) => task.id !== confirmDelete.id))
+      setConfirmDelete(null)
       setModal(null)
       setToast('Task deleted.')
     } catch (error) {
@@ -234,6 +240,17 @@ function App() {
       setBusy(false)
     }
   }
+
+  const handleSearchFocus = useCallback(() => {
+    const searchInput = document.querySelector<HTMLInputElement>('.search-field input')
+    searchInput?.focus()
+  }, [])
+
+  const handleClearFilters = useCallback(() => {
+    setQuery('')
+    setPriority('all')
+    setLabelFilter('all')
+  }, [])
 
   function handleDragStart(event: DragStartEvent) {
     const task = tasks.find((item) => item.id === String(event.active.id)) ?? null
@@ -343,21 +360,7 @@ function App() {
         </div>
       </header>
 
-      <section className="hero-row">
-        <div>
-          <span className="eyebrow">Today's focus</span>
-          <h2>Move meaningful work forward.</h2>
-          <p>Plan, prioritize, and finish tasks in one calm, focused workspace.</p>
-        </div>
-        <div className="session-chip"><CircleDot size={14} /> Private guest session</div>
-      </section>
-
-      <section className="stats-grid" aria-label="Board summary">
-        <div className="stat-card"><span>Total tasks</span><strong>{stats.total}</strong></div>
-        <div className="stat-card"><span>In progress</span><strong>{stats.active}</strong></div>
-        <div className="stat-card"><span>Completed</span><strong>{stats.completed}</strong></div>
-        <div className={`stat-card ${stats.overdue ? 'stat-card-alert' : ''}`}><span>Overdue</span><strong>{stats.overdue}</strong></div>
-      </section>
+      <BoardHeader stats={stats} />
 
       <section className="toolbar" aria-label="Task filters">
         <div className="search-field">
@@ -450,6 +453,22 @@ function App() {
           onClose={() => setShowLabelPanel(false)}
         />
       )}
+
+      {confirmDelete && (
+        <ConfirmDialog
+          title="Delete task"
+          message={`Are you sure you want to delete "${confirmDelete.title}"? This action cannot be undone.`}
+          busy={busy}
+          onConfirm={() => void executeDeleteTask()}
+          onCancel={() => setConfirmDelete(null)}
+        />
+      )}
+
+      <KeyboardShortcuts
+        onNewTask={() => setModal({ mode: 'create', initialStatus: 'todo', task: null })}
+        onSearch={handleSearchFocus}
+        onClearFilters={handleClearFilters}
+      />
 
       {toast && <div className="toast" role="status">{toast}</div>}
     </main>

@@ -14,7 +14,7 @@ interface TaskModalProps {
   taskLabels: string[]
   onClose: () => void
   onSave: (draft: TaskDraft) => Promise<void>
-  onDelete?: () => Promise<void>
+  onDelete?: () => void
 }
 
 const EMPTY_DRAFT: TaskDraft = {
