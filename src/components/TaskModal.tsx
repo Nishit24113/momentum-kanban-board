@@ -34,7 +34,15 @@ function timeAgo(dateStr: string) {
   if (diff < 60) return 'just now'
   if (diff < 3600) return `${Math.floor(diff / 60)}m ago`
   if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`
-  return `${Math.floor(diff / 86400)}d ago`
+  if (diff < 604800) return `${Math.floor(diff / 86400)}d ago`
+  return new Date(dateStr).toLocaleDateString(undefined, { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })
+}
+
+function formatTimestamp(dateStr: string) {
+  const date = new Date(dateStr)
+  return date.toLocaleString(undefined, {
+    month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit',
+  })
 }
 
 export default function TaskModal({
@@ -267,7 +275,10 @@ export default function TaskModal({
               {comments.map((c) => (
                 <div key={c.id} className="comment-item">
                   <div className="comment-header">
-                    <span className="comment-time">{timeAgo(c.created_at)}</span>
+                    <div className="comment-time-group">
+                      <span className="comment-time">{timeAgo(c.created_at)}</span>
+                      <span className="comment-timestamp">{formatTimestamp(c.created_at)}</span>
+                    </div>
                     <button type="button" className="comment-delete" onClick={() => handleDeleteComment(c.id)} aria-label="Delete comment">
                       <X size={13} />
                     </button>
