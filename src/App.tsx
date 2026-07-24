@@ -13,6 +13,7 @@ import {
 import { sortableKeyboardCoordinates } from '@dnd-kit/sortable'
 import {
   AlertTriangle,
+  BarChart3,
   CheckCircle2,
   ListFilter,
   Moon,
@@ -32,6 +33,7 @@ import LabelPanel from './components/LabelPanel'
 import BoardHeader from './components/BoardHeader'
 import KeyboardShortcuts from './components/KeyboardShortcuts'
 import ConfirmDialog from './components/ConfirmDialog'
+import InsightsPanel from './components/InsightsPanel'
 import {
   createTask, deleteTask, fetchTasks, updateTask, logActivity,
   fetchTeamMembers, fetchLabels, fetchTaskLabels, setTaskLabels,
@@ -76,6 +78,7 @@ function App() {
   const [labelFilter, setLabelFilter] = useState<string>('all')
   const [showTeamPanel, setShowTeamPanel] = useState(false)
   const [showLabelPanel, setShowLabelPanel] = useState(false)
+  const [showInsights, setShowInsights] = useState(false)
   const [confirmDelete, setConfirmDelete] = useState<Task | null>(null)
 
   const sensors = useSensors(
@@ -372,6 +375,9 @@ function App() {
           <button className="icon-button theme-toggle" type="button" onClick={toggleTheme} aria-label={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`} title={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}>
             {theme === 'light' ? <Moon size={18} /> : <Sun size={18} />}
           </button>
+          <button className="button button-secondary" type="button" onClick={() => setShowInsights(true)}>
+            <BarChart3 size={16} /> Insights
+          </button>
           <button className="button button-secondary" type="button" onClick={() => setShowTeamPanel(true)}>
             <Users size={16} /> Team
           </button>
@@ -488,6 +494,10 @@ function App() {
           onUpdate={setLabels}
           onClose={() => setShowLabelPanel(false)}
         />
+      )}
+
+      {showInsights && (
+        <InsightsPanel tasks={tasks} onClose={() => setShowInsights(false)} />
       )}
 
       {confirmDelete && (
