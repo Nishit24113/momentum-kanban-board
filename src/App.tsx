@@ -15,9 +15,11 @@ import {
   AlertTriangle,
   CheckCircle2,
   ListFilter,
+  Moon,
   Plus,
   Search,
   Sparkles,
+  Sun,
   Tag,
   Users,
   X,
@@ -35,6 +37,7 @@ import {
   fetchTeamMembers, fetchLabels, fetchTaskLabels, setTaskLabels,
 } from './lib/tasks'
 import { useRealtimeSync } from './hooks/useRealtimeSync'
+import { useTheme } from './hooks/useTheme'
 import { hasSupabaseConfig, supabase } from './lib/supabase'
 import {
   COLUMNS, type Label, type Task, type TaskDraft, type TaskPriority,
@@ -56,6 +59,7 @@ function sortTasks(tasks: Task[]) {
 }
 
 function App() {
+  const { theme, toggle: toggleTheme } = useTheme()
   const [tasks, setTasks] = useState<Task[]>([])
   const [teamMembers, setTeamMembers] = useState<TeamMember[]>([])
   const [labels, setLabels] = useState<Label[]>([])
@@ -365,6 +369,9 @@ function App() {
           </div>
         </div>
         <div className="topbar-actions">
+          <button className="icon-button theme-toggle" type="button" onClick={toggleTheme} aria-label={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`} title={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}>
+            {theme === 'light' ? <Moon size={18} /> : <Sun size={18} />}
+          </button>
           <button className="button button-secondary" type="button" onClick={() => setShowTeamPanel(true)}>
             <Users size={16} /> Team
           </button>
