@@ -34,6 +34,7 @@ import {
   createTask, deleteTask, fetchTasks, updateTask, logActivity,
   fetchTeamMembers, fetchLabels, fetchTaskLabels, setTaskLabels,
 } from './lib/tasks'
+import { useRealtimeSync } from './hooks/useRealtimeSync'
 import { hasSupabaseConfig, supabase } from './lib/supabase'
 import {
   COLUMNS, type Label, type Task, type TaskDraft, type TaskPriority,
@@ -77,6 +78,22 @@ function App() {
     useSensor(PointerSensor, { activationConstraint: { distance: 6 } }),
     useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }),
   )
+
+  useRealtimeSync({
+    userId,
+    onInsert: useCallback((task: Task) => {
+      setTasks((current) => {
+        if (current.some((t) => t.id === task.id)) return current
+        return sortTasks([...current, task])
+      })
+    }, []),
+    onUpdate: useCallback((task: Task) => {
+      setTasks((current) => sortTasks(current.map((t) => t.id === task.id ? task : t)))
+    }, []),
+    onDelete: useCallback((taskId: string) => {
+      setTasks((current) => current.filter((t) => t.id !== taskId))
+    }, []),
+  })
 
   const loadTaskLabels = useCallback(async (taskList: Task[]) => {
     const map: Record<string, string[]> = {}
