@@ -364,34 +364,46 @@ function App() {
 
       <section className="toolbar" aria-label="Task filters">
         <div className="search-field">
-          <Search size={17} />
-          <input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search tasks..." aria-label="Search tasks" />
-          {query && <button type="button" onClick={() => setQuery('')} aria-label="Clear search"><X size={15} /></button>}
+          <Search size={16} />
+          <input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search tasks... (press /)" aria-label="Search tasks" />
+          {query && <button type="button" onClick={() => setQuery('')} aria-label="Clear search"><X size={14} /></button>}
         </div>
         <div className="filter-field">
-          <ListFilter size={17} />
+          <ListFilter size={15} />
           <select value={priority} onChange={(event) => setPriority(event.target.value as 'all' | TaskPriority)} aria-label="Filter by priority">
             <option value="all">All priorities</option>
-            <option value="high">High priority</option>
-            <option value="normal">Normal priority</option>
-            <option value="low">Low priority</option>
+            <option value="high">High</option>
+            <option value="normal">Normal</option>
+            <option value="low">Low</option>
           </select>
         </div>
         {labels.length > 0 && (
           <div className="filter-field">
-            <Tag size={15} />
+            <Tag size={14} />
             <select value={labelFilter} onChange={(event) => setLabelFilter(event.target.value)} aria-label="Filter by label">
               <option value="all">All labels</option>
               {labels.map((l) => <option key={l.id} value={l.id}>{l.name}</option>)}
             </select>
           </div>
         )}
+        {teamMembers.length > 0 && (
+          <div className="filter-field">
+            <Users size={14} />
+            <select defaultValue="all" onChange={(event) => {
+              const val = event.target.value
+              if (val === 'all') handleClearFilters()
+            }} aria-label="Filter by assignee">
+              <option value="all">All members</option>
+              {teamMembers.map((m) => <option key={m.id} value={m.id}>{m.name}</option>)}
+            </select>
+          </div>
+        )}
         {(query || priority !== 'all' || labelFilter !== 'all') && (
-          <button className="clear-filter" type="button" onClick={() => { setQuery(''); setPriority('all'); setLabelFilter('all') }}>
+          <button className="clear-filter" type="button" onClick={handleClearFilters}>
             Clear filters
           </button>
         )}
-        <span className="result-count">{visibleTasks.length} shown</span>
+        <span className="result-count">{visibleTasks.length} task{visibleTasks.length !== 1 ? 's' : ''}</span>
       </section>
 
       <DndContext sensors={sensors} collisionDetection={closestCorners} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
@@ -417,8 +429,8 @@ function App() {
       </DndContext>
 
       <footer className="app-footer">
-        <span><CheckCircle2 size={15} /> Changes persist securely to Supabase</span>
-        <span>Guest ID: {userId?.slice(0, 8)}</span>
+        <span><CheckCircle2 size={14} /> Secured with Supabase RLS</span>
+        <span>Guest session: {userId?.slice(0, 8)} · Press N for new task</span>
       </footer>
 
       {modal && (
