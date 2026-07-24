@@ -1,0 +1,18 @@
+node_modules/
+dist/
+.env
+.env.local
+.env.*.local
+*.log
+*.tsbuildinfo
+vite.config.d.ts
+vite.config.js
+.DS_Store
+.vscode/
+.idea/
+assessment-private/
+NP SDE Assessment Challenge.pdf
+Internship Assessment*.pdf
+Software Engineer Internship*.pdf
+START_HERE.md
+.kiro/specs/
