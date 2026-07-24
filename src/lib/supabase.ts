@@ -17,5 +17,30 @@ export const supabase = createClient(
       storageKey: 'momentum-board-auth',
       flowType: 'implicit',
     },
+    global: {
+      headers: { 'x-client-info': 'momentum-board/1.0' },
+    },
   },
 )
+
+export async function getOrCreateSession() {
+  // First try to recover existing session
+  const { data: { session }, error } = await supabase.auth.getSession()
+
+  if (session?.user?.id) {
+    return session
+  }
+
+  // If session expired, try refreshing it
+  if (error || !session) {
+    const { data: refreshData } = await supabase.auth.refreshSession()
+    if (refreshData?.session?.user?.id) {
+      return refreshData.session
+    }
+  }
+
+  // Last resort: create new anonymous session
+  const { data, error: signInError } = await supabase.auth.signInAnonymously()
+  if (signInError) throw new Error(`Authentication failed: ${signInError.message}`)
+  return data.session
+}

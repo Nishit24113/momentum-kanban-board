@@ -40,7 +40,7 @@ import {
 } from './lib/tasks'
 import { useRealtimeSync } from './hooks/useRealtimeSync'
 import { useTheme } from './hooks/useTheme'
-import { hasSupabaseConfig, supabase } from './lib/supabase'
+import { getOrCreateSession, hasSupabaseConfig } from './lib/supabase'
 import {
   COLUMNS, type Label, type Task, type TaskDraft, type TaskPriority,
   type TaskStatus, type TeamMember,
@@ -122,18 +122,7 @@ function App() {
       }
 
       try {
-        const { data: sessionData, error: sessionError } = await supabase.auth.getSession()
-        if (sessionError) {
-          console.warn('Session retrieval failed, attempting fresh sign-in:', sessionError.message)
-        }
-
-        let session = sessionData?.session
-        if (!session) {
-          const { data, error } = await supabase.auth.signInAnonymously()
-          if (error) throw new Error(`Authentication failed: ${error.message}`)
-          session = data.session
-        }
-
+        const session = await getOrCreateSession()
         if (!session?.user?.id) throw new Error('Could not create the guest session. Ensure anonymous sign-ins are enabled in Supabase Auth settings.')
 
         const [loadedTasks, loadedMembers, loadedLabels] = await Promise.all([
