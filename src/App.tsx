@@ -265,6 +265,15 @@ function App() {
     setLabelFilter('all')
   }, [])
 
+  const handleEscape = useCallback(() => {
+    if (confirmDelete) { setConfirmDelete(null); return }
+    if (modal) { setModal(null); return }
+    if (showInsights) { setShowInsights(false); return }
+    if (showTeamPanel) { setShowTeamPanel(false); return }
+    if (showLabelPanel) { setShowLabelPanel(false); return }
+    handleClearFilters()
+  }, [confirmDelete, modal, showInsights, showTeamPanel, showLabelPanel, handleClearFilters])
+
   function handleDragStart(event: DragStartEvent) {
     const task = tasks.find((item) => item.id === String(event.active.id)) ?? null
     setActiveTask(task)
@@ -503,14 +512,7 @@ function App() {
         onNewTask={() => setModal({ mode: 'create', initialStatus: 'todo', task: null })}
         onSearch={handleSearchFocus}
         onClearFilters={handleClearFilters}
-        onEscape={useCallback(() => {
-          if (confirmDelete) { setConfirmDelete(null); return }
-          if (modal) { setModal(null); return }
-          if (showInsights) { setShowInsights(false); return }
-          if (showTeamPanel) { setShowTeamPanel(false); return }
-          if (showLabelPanel) { setShowLabelPanel(false); return }
-          handleClearFilters()
-        }, [confirmDelete, modal, showInsights, showTeamPanel, showLabelPanel, handleClearFilters])}
+        onEscape={handleEscape}
       />
 
       {toast && <div className="toast" role="status">{toast}</div>}

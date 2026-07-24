@@ -24,22 +24,24 @@ export const supabase = createClient(
 )
 
 export async function getOrCreateSession() {
-  // First try to recover existing session
-  const { data: { session }, error } = await supabase.auth.getSession()
-
-  if (session?.user?.id) {
-    return session
+  try {
+    const { data: { session } } = await supabase.auth.getSession()
+    if (session?.user?.id) {
+      return session
+    }
+  } catch {
+    // Session retrieval failed, continue to refresh/create
   }
 
-  // If session expired, try refreshing it
-  if (error || !session) {
+  try {
     const { data: refreshData } = await supabase.auth.refreshSession()
     if (refreshData?.session?.user?.id) {
       return refreshData.session
     }
+  } catch {
+    // Refresh failed (no stored refresh token), continue to create
   }
 
-  // Last resort: create new anonymous session
   const { data, error: signInError } = await supabase.auth.signInAnonymously()
   if (signInError) throw new Error(`Authentication failed: ${signInError.message}`)
   return data.session
