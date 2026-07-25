@@ -52,9 +52,13 @@ interface ModalState {
   task: Task | null
 }
 
+const PRIORITY_ORDER: Record<string, number> = { high: 0, normal: 1, low: 2 }
+
 function sortTasks(tasks: Task[]) {
   return [...tasks].sort((left, right) => {
     if (left.status !== right.status) return left.status.localeCompare(right.status)
+    const priorityDiff = (PRIORITY_ORDER[left.priority] ?? 1) - (PRIORITY_ORDER[right.priority] ?? 1)
+    if (priorityDiff !== 0) return priorityDiff
     if (left.position !== right.position) return left.position - right.position
     return new Date(left.created_at).getTime() - new Date(right.created_at).getTime()
   })
