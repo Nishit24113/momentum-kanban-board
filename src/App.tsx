@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, useCallback } from 'react'
+import { useEffect, useMemo, useRef, useState, useCallback } from 'react'
 import {
   DndContext,
   DragOverlay,
@@ -90,9 +90,15 @@ function App() {
     useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }),
   )
 
+  const recentlyCreatedRef = useRef(new Set<string>())
+
   useRealtimeSync({
     userId,
     onInsert: useCallback((task: Task) => {
+      if (recentlyCreatedRef.current.has(task.id)) {
+        recentlyCreatedRef.current.delete(task.id)
+        return
+      }
       setTasks((current) => {
         if (current.some((t) => t.id === task.id)) return current
         return sortTasks([...current, task])
@@ -225,6 +231,7 @@ function App() {
         setToast('Task updated successfully.')
       } else {
         const created = await createTask(userId, draft)
+        recentlyCreatedRef.current.add(created.id)
         setTaskLabelMap((prev) => ({ ...prev, [created.id]: draft.label_ids }))
         setTasks((current) => sortTasks([...current, created]))
         setToast('Task created successfully.')
