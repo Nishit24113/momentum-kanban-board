@@ -10,16 +10,20 @@ interface KeyboardShortcutsProps {
 export default function KeyboardShortcuts({ onNewTask, onSearch, onClearFilters, onEscape }: KeyboardShortcutsProps) {
   useEffect(() => {
     function handleKeyDown(event: KeyboardEvent) {
+      const target = event.target as HTMLElement
+
       if (event.key === 'Escape') {
         event.preventDefault()
-        onEscape()
+        if (target instanceof HTMLInputElement || target instanceof HTMLTextAreaElement || target instanceof HTMLSelectElement) {
+          target.blur()
+          onClearFilters()
+        } else {
+          onEscape()
+        }
         return
       }
 
-      if (event.target instanceof HTMLInputElement || event.target instanceof HTMLTextAreaElement || event.target instanceof HTMLSelectElement) {
-        if (event.key === 'Escape') {
-          ;(event.target as HTMLElement).blur()
-        }
+      if (target instanceof HTMLInputElement || target instanceof HTMLTextAreaElement || target instanceof HTMLSelectElement) {
         return
       }
 
