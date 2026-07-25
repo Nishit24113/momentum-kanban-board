@@ -263,6 +263,7 @@ function App() {
     searchInput?.focus()
   }, [])
 
+
   const handleClearFilters = useCallback(() => {
     setQuery('')
     setPriority('all')

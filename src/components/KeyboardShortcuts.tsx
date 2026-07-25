@@ -16,7 +16,6 @@ export default function KeyboardShortcuts({ onNewTask, onSearch, onClearFilters,
         event.preventDefault()
         if (target instanceof HTMLInputElement || target instanceof HTMLTextAreaElement || target instanceof HTMLSelectElement) {
           target.blur()
-          onClearFilters()
         } else {
           onEscape()
         }
